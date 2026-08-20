@@ -1,0 +1,65 @@
+================================================================================
+TUTORIAL — Build Docker + push para GitHub (GHCR)
+Imagem: ghcr.io/dev-codero/proedukaportal:latest
+================================================================================
+
+Se o prompt do terminal começar com PS (PowerShell), use APENAS a secção A.
+Se for Git Bash (prompt com $), use a secção B.
+
+ANTES DE COMEÇAR
+- Preencha deploy/stack.env (Postgres: DATABASE_URL, SESSION_SECRET + URL pública NEXT_PUBLIC_APP_URL para o build).
+- Token GitHub com write:packages e read:packages.
+
+================================================================================
+A) POWERSHELL (Cursor no Windows — prompt PS>)
+================================================================================
+
+Na raiz do projeto (ex.: D:\Projetos Cursor\Proeduka):
+
+1) Apagar imagem antiga local (opcional)
+
+docker rmi ghcr.io/dev-codero/proedukaportal:latest
+
+(Se estiver em uso: docker rmi -f ghcr.io/dev-codero/proedukaportal:latest)
+
+2) Login no GHCR — substitua SEU_TOKEN pelo PAT (mantém aspas)
+
+"SEU_TOKEN" | docker login ghcr.io -u dev-codero --password-stdin
+
+3) Build (lê deploy\stack.env sozinho). NÃO use chmod. NÃO use TAG= na frente.
+
+$env:TAG = "ghcr.io/dev-codero/proedukaportal:latest"
+.\deploy\build.ps1
+
+4) Push
+
+docker push ghcr.io/dev-codero/proedukaportal:latest
+
+5) Limpar camadas órfãs (opcional)
+
+docker image prune -f
+
+================================================================================
+B) GIT BASH (prompt com $ — não é PowerShell)
+================================================================================
+
+cd "/d/Projetos Cursor/Proeduka"
+
+docker rmi ghcr.io/dev-codero/proedukaportal:latest
+
+echo SEU_TOKEN | docker login ghcr.io -u dev-codero --password-stdin
+
+chmod +x deploy/build.sh
+TAG=ghcr.io/dev-codero/proedukaportal:latest ./deploy/build.sh
+
+docker push ghcr.io/dev-codero/proedukaportal:latest
+
+docker image prune -f
+
+================================================================================
+Git (commits) — opcional
+================================================================================
+
+git add .
+git commit -m "Deploy"
+git push origin main

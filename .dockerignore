@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+!.env.example
+deploy/*.md
+coverage
+.vscode
+.cursor
+terminals
+npm-debug.log*

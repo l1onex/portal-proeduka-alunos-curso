@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/*
+  Proeduca — identidade: branco + marca
+  Primária #F66828 | Profundidade #D9571E | Destaque #FF4D0C
+*/
+:root {
+  --surface: #ffffff;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --muted: #64748b;
+  --border: #e8eef5;
+  --brand-primary: #f66828;
+  --brand-deep: #d9571e;
+  --brand-accent: #ff4d0c;
+  --brand-on-primary: #ffffff;
+  --brand-on-accent: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-accent: var(--brand-accent);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Loader ProEduka — brilho e rotação invertida */
+@keyframes proeduka-loader-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    filter: blur(14px);
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.95;
+    filter: blur(20px);
+    transform: scale(1.06);
+  }
+}
+
+@keyframes proeduka-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-proeduka-loader-glow {
+  animation: proeduka-loader-glow 2.1s ease-in-out infinite;
+}
+
+.animate-proeduka-spin-reverse {
+  animation: proeduka-spin-reverse 0.72s linear infinite;
+}
+
+/* Reverte textos que ficaram na cor da marca para azul */
+[class*="text-[#F66828]"],
+[class*="text-[#D9571E]"] {
+  color: #0042da !important;
+}

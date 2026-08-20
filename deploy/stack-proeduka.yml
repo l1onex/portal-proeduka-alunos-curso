@@ -1,0 +1,51 @@
+# Portainer / Swarm — valores preenchidos a partir dos teus `.env` e `deploy/stack.env` locais.
+# ⚠️ Isto contém segredos em claro. NÃO incluas esta cópia em repositório público / partilhas.
+#
+# Fluxo típico: build da imagem alinhado a NEXT_PUBLIC_APP_URL (portal); depois deploy desta stack.
+#
+version: "3.7"
+
+services:
+  proeduka:
+    image: ghcr.io/dev-codero/proedukaportal:latest
+    networks:
+      - network_public
+    environment:
+      DATABASE_URL: "postgresql://postgres:343klvnlvnslvnl5kn@204.168.229.104:5432/proeduka"
+      SESSION_SECRET: "vK9xP2Lm8Qa7Nz4Uw1Hy6Rs3Df8Tc5Ab"
+      AUTH_INSTANCE_ID: ""
+      PROFILES_NAME_COLUMN: "nome"
+
+      B2_APPLICATION_KEY_ID: "0055ec88b202ce10000000004"
+      B2_APPLICATION_KEY: "K005xpkzaB+soD0OCCrYw3WN9hCltRI"
+      B2_BUCKET_NAME: "proeduka"
+      B2_S3_ENDPOINT: "https://s3.us-east-005.backblazeb2.com"
+      B2_REGION: "us-east-005"
+
+      CRON_SECRET: ""
+      ENABLE_INTERNAL_CRON: "true"
+
+      # Igual ao `deploy/stack.env` (produção). O bundle do cliente já vem compilado neste URL no build da imagem.
+      NEXT_PUBLIC_APP_URL: "https://portalcursos.proeduka.com.br"
+      NEXT_PUBLIC_ALUNOS_TABLE: "proeduka_alunos"
+      NEXT_PUBLIC_BRAND_LOGO_URL: ""
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=1
+        - traefik.http.routers.proeduka.rule=Host(`portalcursos.proeduka.com.br`)
+        - traefik.http.routers.proeduka.entrypoints=websecure
+        - traefik.http.routers.proeduka.priority=1
+        - traefik.http.routers.proeduka.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.proeduka.service=proeduka
+        - traefik.http.services.proeduka.loadbalancer.server.port=3000
+        - traefik.http.services.proeduka.loadbalancer.passHostHeader=true
+
+networks:
+  network_public:
+    name: network_public
+    external: true

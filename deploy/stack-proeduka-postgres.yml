@@ -44,7 +44,7 @@ services:
       start_period: 30s
 
   proeduka:
-    image: ghcr.io/dev-codero/proedukaportal:latest
+    image: ghcr.io/l1onex/portal-proeduka-alunos-curso:latest
     networks:
       - stack_net
       - network_public

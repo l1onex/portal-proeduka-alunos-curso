@@ -55,6 +55,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/migrations ./migrations
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
+# Os scripts de migração (scripts/docker-start.mjs → apply-all-migrations.mjs)
+# usam `postgres` e `bcryptjs` que o .next/standalone do Next.js não inclui.
+# Instala apenas estas duas (e transitive deps) para que `node scripts/...` resolva.
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/package-lock.json ./package-lock.json
+RUN npm install --no-save --omit=dev --no-audit --no-fund postgres bcryptjs
+
 USER nextjs
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["node", "scripts/docker-start.mjs"]

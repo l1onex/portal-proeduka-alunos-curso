@@ -7,7 +7,7 @@ version: "3.7"
 
 services:
   proeduka:
-    image: ghcr.io/dev-codero/proedukaportal:latest
+    image: ghcr.io/l1onex/portal-proeduka-alunos-curso:latest
     networks:
       - network_public
     environment:

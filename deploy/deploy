@@ -1,65 +1,88 @@
 ================================================================================
-TUTORIAL — Build Docker + push para GitHub (GHCR)
-Imagem: ghcr.io/dev-codero/proedukaportal:latest
+TUTORIAL — Deploy via GitHub Actions + Docker Swarm
+Imagem: ghcr.io/l1onex/portal-proeduka-alunos-curso:latest (linux/amd64 + linux/arm64)
 ================================================================================
 
-Se o prompt do terminal começar com PS (PowerShell), use APENAS a secção A.
-Se for Git Bash (prompt com $), use a secção B.
-
-ANTES DE COMEÇAR
-- Preencha deploy/stack.env (Postgres: DATABASE_URL, SESSION_SECRET + URL pública NEXT_PUBLIC_APP_URL para o build).
-- Token GitHub com write:packages e read:packages.
+O build e o push da imagem são feitos pelo GitHub Actions (.github/workflows/build.yml),
+não no PC local. Aqui fica apenas o fluxo de preparação + deploy no Swarm.
 
 ================================================================================
-A) POWERSHELL (Cursor no Windows — prompt PS>)
+0) CONFIGURAR (uma única vez)
 ================================================================================
 
-Na raiz do projeto (ex.: D:\Projetos Cursor\Proeduka):
+A) Repo já ligado ao GitHub: https://github.com/l1onex/portal-proeduka-alunos-curso
 
-1) Apagar imagem antiga local (opcional)
+B) Secrets no GitHub (Settings → Secrets and variables → Actions → New repository secret):
+   - NEXT_PUBLIC_APP_URL        = https://portalcursos.proeduka.com.br
+   - NEXT_PUBLIC_ALUNOS_TABLE   = proeduka_alunos     (opcional; tem default)
 
-docker rmi ghcr.io/dev-codero/proedukaportal:latest
+   Sem o NEXT_PUBLIC_APP_URL o build falha (o Dockerfile valida o arg).
 
-(Se estiver em uso: docker rmi -f ghcr.io/dev-codero/proedukaportal:latest)
-
-2) Login no GHCR — substitua SEU_TOKEN pelo PAT (mantém aspas)
-
-"SEU_TOKEN" | docker login ghcr.io -u dev-codero --password-stdin
-
-3) Build (lê deploy\stack.env sozinho). NÃO use chmod. NÃO use TAG= na frente.
-
-$env:TAG = "ghcr.io/dev-codero/proedukaportal:latest"
-.\deploy\build.ps1
-
-4) Push
-
-docker push ghcr.io/dev-codero/proedukaportal:latest
-
-5) Limpar camadas órfãs (opcional)
-
-docker image prune -f
+C) Pacote GHCR visível aos nós do Swarm. Em
+   https://github.com/users/l1onex/packages/container/portal-proeduka-alunos-curso/settings
+   → Package visibility: Public (recomendado). Se ficar Private, os nós do Swarm
+   precisam de `docker login ghcr.io` com PAT com scope read:packages.
 
 ================================================================================
-B) GIT BASH (prompt com $ — não é PowerShell)
+1) BUILD + PUSH (automático, no GitHub)
 ================================================================================
 
-cd "/d/Projetos Cursor/Proeduka"
+Tudo o que precisas fazer é enviar commits para a branch main (ou master).
+O Actions faz o resto:
 
-docker rmi ghcr.io/dev-codero/proedukaportal:latest
+  - jobs lint-and-build  → ESLint + next build (standalone)
+  - jobs docker          → buildx multi-arch (amd64 + arm64) + push para GHCR :latest
 
-echo SEU_TOKEN | docker login ghcr.io -u dev-codero --password-stdin
+Na tua máquina (PowerShell ou Git Bash — tanto faz):
 
-chmod +x deploy/build.sh
-TAG=ghcr.io/dev-codero/proedukaportal:latest ./deploy/build.sh
+  git add .
+  git commit -m "..."
+  git push origin main
 
-docker push ghcr.io/dev-codero/proedukaportal:latest
-
-docker image prune -f
+Acompanha em: https://github.com/l1onex/portal-proeduka-alunos-curso/actions
+Quando ficar verde, a imagem já está em ghcr.io/l1onex/portal-proeduka-alunos-curso:latest.
 
 ================================================================================
-Git (commits) — opcional
+2) DEPLOY NO SWARM (manual, no nó manager)
 ================================================================================
 
-git add .
-git commit -m "Deploy"
-git push origin main
+SSH no manager do Swarm e executa:
+
+A) Primeira vez — criar a stack (com Postgres embutido):
+   docker stack deploy -c deploy/stack-proeduka-postgres.yml proeduka
+
+   Se ainda usares o stack antigo sem Postgres:
+   docker stack deploy -c deploy/stack-proeduka.yml proeduka
+
+B) Atualizações — depois de cada push novo ao main:
+   docker service update --image ghcr.io/l1onex/portal-proeduka-alunos-curso:latest proeduka_proeduka
+
+   (ou simplesmente repete o `docker stack deploy` do ponto A — idempotente.)
+
+C) Ver logs:
+   docker service logs -f proeduka_proeduka
+   docker service logs -f proeduka_postgres
+
+D) Estado dos serviços:
+   docker stack ps proeduka
+   docker service ls
+
+================================================================================
+3) ROLLBACK (se uma versão correr mal)
+================================================================================
+
+  docker service rollback proeduka_proeduka
+
+================================================================================
+4) NOTAS
+================================================================================
+
+- O Actions publica uma tag :latest multi-arch. Os nós do Swarm (x86_64 ou
+  arm64) puxam automaticamente a imagem certa para a sua arquitetura.
+
+- Não fazer `docker build` / `docker push` local após o Actions estar a publicar:
+  um push single-arch local substitui o manifest e perde a outra arquitetura.
+
+- Para limpar imagens antigas nos nós do Swarm:
+  docker image prune -f
+  docker image prune -a --filter "until=72h" -f   # remove > 72h sem uso

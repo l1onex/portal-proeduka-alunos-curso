@@ -67,6 +67,12 @@ services:
       NEXT_PUBLIC_APP_URL: "https://portalcursos.proeduka.com.br"
       NEXT_PUBLIC_ALUNOS_TABLE: "proeduka_alunos"
       NEXT_PUBLIC_BRAND_LOGO_URL: ""
+
+      # Bootstrap do primeiro master (idempotente — corre só se o email ainda não existir em auth.users).
+      # Preencher uma única vez no primeiro arranque; depois pode remover ou manter (não vai duplicar).
+      BOOTSTRAP_MASTER_EMAIL: ""
+      BOOTSTRAP_MASTER_PASSWORD: ""
+      BOOTSTRAP_MASTER_NAME: ""
     deploy:
       mode: replicated
       replicas: 1

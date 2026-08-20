@@ -1,8 +1,8 @@
 /** Contato oficial ProEduca: WhatsApp e e-mail (sem ligação telefónica directa pelo número). */
 export const PROEDUCA_CONTACT = {
-  phoneDisplay: "+55 0800 260 2626",
+  phoneDisplay: "+55 800 777 2026",
   /** Dígitos para wa.me (sem espaços). */
-  phoneE164Digits: "558002602626",
+  phoneE164Digits: "558007772026",
   email: "contato@proeduka.com.br",
 } as const;
 

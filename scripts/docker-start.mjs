@@ -3,15 +3,22 @@
  *   1) Espera a DB (scripts/wait-for-db.mjs) — sai se não responder.
  *   2) Aplica migrações pendentes (scripts/apply-all-migrations.mjs).
  *      Idempotente: a tabela `public.app_migrations` regista o que já correu.
- *   3) Lança `node server.js` com stdio herdado (PID 1 recebe sinais).
+ *   3) Faz bootstrap do primeiro master se as env vars
+ *      BOOTSTRAP_MASTER_EMAIL/PASSWORD/NAME estiverem definidas e o
+ *      utilizador ainda não existir. Idempotente.
+ *   4) Lança `node server.js` com stdio herdado (PID 1 recebe sinais).
  *
  * Variáveis de ambiente opcionais:
  *   PROEDUKA_SKIP_MIGRATIONS=1   → salta o passo de migrações.
+ *   PROEDUKA_SKIP_BOOTSTRAP=1    → salta o passo de bootstrap do master.
  *   PROEDUKA_DB_WAIT_TIMEOUT_MS  → timeout de espera pela DB (default 90000).
  */
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import postgres from "postgres";
+import { ensureAuthSchema } from "./bootstrap-auth-core.mjs";
+import { ensureBootstrapMaster, getBootstrapMasterConfigFromEnv } from "./bootstrap-master-core.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +45,31 @@ try {
     console.log("[start] PROEDUKA_SKIP_MIGRATIONS=1 — migrações ignoradas.");
   } else {
     await runNode("apply-all-migrations.mjs", "Aplicar migrações");
+  }
+
+  if (process.env.PROEDUKA_SKIP_BOOTSTRAP === "1") {
+    console.log("[start] PROEDUKA_SKIP_BOOTSTRAP=1 — bootstrap do master ignorado.");
+  } else {
+    const cfg = getBootstrapMasterConfigFromEnv();
+    if (cfg) {
+      console.log(`[start] A fazer bootstrap do master (${cfg.email})…`);
+      const sql = postgres(process.env.DATABASE_URL?.trim() ?? "", { max: 1 });
+      try {
+        await ensureAuthSchema(sql);
+        const r = await ensureBootstrapMaster(sql, { config: cfg });
+        if (r.skipped) {
+          console.log("[start] Master: configuração ausente — bootstrap ignorado.");
+        } else {
+          console.log(
+            `[start] Master bootstrap: createdAuth=${r.createdAuth} createdProfile=${r.createdProfile} userId=${r.userId}`,
+          );
+        }
+      } finally {
+        await sql.end({ timeout: 5 });
+      }
+    } else {
+      console.log("[start] Sem BOOTSTRAP_MASTER_* — bootstrap do master não executado.");
+    }
   }
 } catch (err) {
   console.error(`[start] Falha: ${err.message}`);

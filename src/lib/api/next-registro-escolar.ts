@@ -12,9 +12,9 @@ function pickRegistroFields(hit: Record<string, unknown>): {
   livro: unknown;
   pagina: unknown;
 } {
-  let numero_registro: unknown = hit.numero_registro;
-  let livro: unknown = hit.livro;
-  let pagina: unknown = hit.pagina;
+  const numero_registro: unknown = hit.numero_registro;
+  const livro: unknown = hit.livro;
+  const pagina: unknown = hit.pagina;
   if (
     typeof numero_registro === "string" &&
     numero_registro.trim().length > 0 &&
@@ -24,7 +24,7 @@ function pickRegistroFields(hit: Record<string, unknown>): {
     return { numero_registro, livro, pagina };
   }
 
-  let rawNested: unknown = hit.next_registro_escolar;
+  const rawNested: unknown = hit.next_registro_escolar;
   let obj: Record<string, unknown> | null = null;
 
   if (rawNested != null && typeof rawNested === "object" && !Array.isArray(rawNested)) {

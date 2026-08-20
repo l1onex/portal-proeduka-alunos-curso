@@ -143,7 +143,7 @@ export function AdminCursoForm({
       title: "Apagar curso?",
       message: (
         <>
-          Tem certeza de que deseja <strong>apagar o curso "{initial.nome}"</strong>?
+          Tem certeza de que deseja <strong>apagar o curso &quot;{initial.nome}&quot;</strong>?
           Esta ação não pode ser desfeita.
         </>
       ),

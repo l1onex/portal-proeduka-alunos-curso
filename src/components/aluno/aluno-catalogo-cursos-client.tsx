@@ -53,7 +53,7 @@ export function AlunoCatalogoCursosClient({
       title: "Solicitar curso?",
       message: (
         <>
-          Tem certeza de que deseja <strong>solicitar o curso "{curso.nome}"</strong>?
+          Tem certeza de que deseja <strong>solicitar o curso &quot;{curso.nome}&quot;</strong>?
           <br />
           A equipa administrativa vai receber o pedido e decidir se libera o
           curso para você.

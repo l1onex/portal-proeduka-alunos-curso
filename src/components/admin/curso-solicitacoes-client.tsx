@@ -46,7 +46,7 @@ export function CursoSolicitacoesClient({ pedidos, thumbMap }: Props) {
       title: "Liberar curso?",
       message: (
         <>
-          Tem certeza de que deseja <strong>liberar o curso "{p.curso_nome ?? "?"}"</strong>{" "}
+          Tem certeza de que deseja <strong>liberar o curso &quot;{p.curso_nome ?? "?"}&quot;</strong>{" "}
           para <strong>{alunoNome}</strong>?
           <br />
           O aluno passará a ter o curso na ficha dele.
@@ -86,7 +86,7 @@ export function CursoSolicitacoesClient({ pedidos, thumbMap }: Props) {
       title: "Recusar pedido?",
       message: (
         <>
-          Tem certeza de que deseja <strong>recusar o pedido de "{p.curso_nome ?? "?"}"</strong>{" "}
+          Tem certeza de que deseja <strong>recusar o pedido de &quot;{p.curso_nome ?? "?"}&quot;</strong>{" "}
           para <strong>{alunoNome}</strong>?
         </>
       ),

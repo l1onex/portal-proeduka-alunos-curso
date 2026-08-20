@@ -12,7 +12,6 @@ import {
 } from "react";
 import { parseLegacyNaturalidadeText } from "@/lib/br-ibge-naturalidade";
 import {
-  getAlunosTableName,
   INFO_KEYS_OPCIONAIS,
   INFO_KEYS_ORDERED,
   INFO_LABELS,
@@ -89,7 +88,6 @@ const INFO_HINTS: Record<InfoKey, string> = {
 const BR_FIELD = "border-[#b0c4d9]";
 const BR_FIELD_RO = "border-[#b8c9dc]";
 const BR_INPUT = "border-[#9eb5d1]";
-const BR_SECTION = "border-[#c8d6e6]";
 
 /** Campos institucionais só na ficha admin (guardados na mesma tabela). */
 const ADMIN_INSTITUTIONAL_KEYS = [
@@ -331,7 +329,7 @@ export function AlunoDadosForm({
         naturalidade_cidade: p.naturalidade_cidade,
       };
     });
-  }, [row.naturalidade, setRow]);
+  }, [row.naturalidade, row.naturalidade_uf, row.naturalidade_cidade, setRow]);
 
   const strVal = useCallback((key: InfoKey): string => {
     const v = row[key];

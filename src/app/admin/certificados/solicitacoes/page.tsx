@@ -72,7 +72,7 @@ export default async function AdminCertificadoSolicitacoesPage({
           Solicitações de certificado
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Pedidos de certificado feitos pelos alunos a partir do card "Cursos".
+          Pedidos de certificado feitos pelos alunos a partir do card &quot;Cursos&quot;.
           Inicie a certificação se tudo estiver OK com a plataforma de curso,
           ou recuse para libertar o botão de solicitar.
         </p>

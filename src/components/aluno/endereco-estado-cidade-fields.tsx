@@ -27,23 +27,22 @@ export function EnderecoEstadoCidadeFields({
   inputClass,
   onChange,
 }: Props) {
-  const [municipios, setMunicipios] = useState<string[]>([]);
+  const [fetchedMunicipios, setMunicipios] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const ufVal = uf.trim().toUpperCase().slice(0, 2);
   const cidadeNorm = cidade.trim().toUpperCase();
+  // Deriva: lista fica vazia sempre que a UF não é válida, sem setState em effect.
+  const municipios = ufVal.length === 2 ? fetchedMunicipios : [];
 
   useEffect(() => {
-    const sigla = ufVal;
-    if (sigla.length !== 2) {
-      setMunicipios([]);
-      return;
-    }
+    if (ufVal.length !== 2) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loading flag de fetch externo (IBGE).
     setLoading(true);
     setErr(null);
-    void fetchIbgeMunicipiosNomes(sigla)
+    void fetchIbgeMunicipiosNomes(ufVal)
       .then((list) => {
         if (!cancelled) setMunicipios(list);
       })

@@ -38,6 +38,7 @@ export function ConfirmDialog({ state, onClose }: Props) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR hydration: só anima após mount no cliente.
     setMounted(true);
   }, []);
 

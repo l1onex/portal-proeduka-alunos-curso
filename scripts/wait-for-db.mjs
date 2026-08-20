@@ -31,7 +31,7 @@ while (true) {
     const elapsed = Math.round((Date.now() - startedAt) / 1000);
     console.log(`[wait-for-db] DB pronta após ${attempt} tentativa(s), ${elapsed}s.`);
     break;
-  } catch (err) {
+  } catch (_err) {
     const elapsed = Date.now() - startedAt;
     if (elapsed >= timeoutMs) {
       console.error(

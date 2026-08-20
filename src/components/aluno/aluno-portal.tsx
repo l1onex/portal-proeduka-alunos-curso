@@ -12,7 +12,6 @@ import {
   docKeysForRow,
   DOC_LABELS,
   type DocKey,
-  getAlunosTableName,
   isCertificadoSolicitado,
   isDesistente,
   isInadimplente,

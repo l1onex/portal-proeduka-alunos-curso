@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AlunosPagination } from "@/components/admin/alunos-pagination";
 import {
   StudentsGrid,
@@ -168,12 +169,12 @@ export function AlunosSearchClient({
               Aplicar filtros
             </button>
             {hasActive ? (
-              <a
+              <Link
                 href="/admin/alunos"
                 className="text-sm font-semibold text-slate-600 underline-offset-2 hover:text-[#D9571E] hover:underline"
               >
                 Limpar busca e filtros
-              </a>
+              </Link>
             ) : null}
           </div>
         </fieldset>

@@ -37,7 +37,7 @@ export function CursoDetalheDrawer({
   const imageUrl = curso?.image_url ?? null;
   const { confirm, dialog } = useConfirmDialog();
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [_msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   /** Pedido ativo (pendente ou iniciado) para este curso — só aluno. */
   const [pedidoAtivo, setPedidoAtivo] = useState<CursoPedidoRow | null>(null);
@@ -94,7 +94,7 @@ export function CursoDetalheDrawer({
       title: "Remover curso?",
       message: (
         <>
-          Tem certeza de que deseja <strong>remover o curso "{curso.nome}"</strong>{" "}
+          Tem certeza de que deseja <strong>remover o curso &quot;{curso.nome}&quot;</strong>{" "}
           deste aluno? Ele deixará de vê-lo na ficha dele.
         </>
       ),

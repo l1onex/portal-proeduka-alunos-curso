@@ -49,7 +49,7 @@ export function SolicitacoesCertificadoClient({
       message: (
         <>
           Tem certeza de que deseja <strong>recusar a solicitação de certificado</strong>{" "}
-          do curso "{p.curso_nome ?? "?"}" para <strong>{alunoNome}</strong>?
+          do curso &quot;{p.curso_nome ?? "?"}&quot; para <strong>{alunoNome}</strong>?
         </>
       ),
       confirmLabel: "Sim, recusar",

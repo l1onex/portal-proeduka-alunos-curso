@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { sha256Hex } from "@/lib/api/api-key-crypto";
 import { getSql } from "@/lib/db/client";
 
-const TABLE = "api_keys";
-
 /** Extrai token de `Authorization: Bearer` ou `X-API-Key`. */
 export function getApiKeyFromRequest(request: Request): string | null {
   const auth = request.headers.get("authorization");

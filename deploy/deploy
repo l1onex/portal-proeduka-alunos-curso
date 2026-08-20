@@ -1,6 +1,6 @@
 ================================================================================
 TUTORIAL — Deploy via GitHub Actions + Docker Swarm
-Imagem: ghcr.io/l1onex/portal-proeduka-alunos-curso:latest (linux/amd64 + linux/arm64)
+Imagem: ghcr.io/l1onex/portal-proeduka-alunos-curso:latest (linux/arm64)
 ================================================================================
 
 O build e o push da imagem são feitos pelo GitHub Actions (.github/workflows/build.yml),
@@ -77,11 +77,11 @@ D) Estado dos serviços:
 4) NOTAS
 ================================================================================
 
-- O Actions publica uma tag :latest multi-arch. Os nós do Swarm (x86_64 ou
-  arm64) puxam automaticamente a imagem certa para a sua arquitetura.
+- O Actions publica uma tag :latest single-arch (linux/arm64). Os nós do
+  Swarm têm de ser ARM64 para puxar e correr a imagem.
 
 - Não fazer `docker build` / `docker push` local após o Actions estar a publicar:
-  um push single-arch local substitui o manifest e perde a outra arquitetura.
+  um push local substitui a tag e pode quebrar o que está em produção.
 
 - Para limpar imagens antigas nos nós do Swarm:
   docker image prune -f
